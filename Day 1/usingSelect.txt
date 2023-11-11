@@ -1,0 +1,99 @@
+//selecting the database by this command OR double click on that DB
+USE sql_store;
+
+
+//Retrieve all data from table  using select command
+SELECT *
+
+FROM customers
+  //the table name we query
+-- WHERE customer_id=1
+//Use where clause to filter the data 
+ ORDER BY first_name;
+ //If we want to sort the data based on firstname
+
+//Here we can select fname,lname from customers data 
+SELECT 
+	
+	last_name,
+	
+	first_name,
+    
+	points,
+    
+	(points+10)*100 AS  "discount factor"
+ //we can name the modified column using as 
+FROM customers;
+
+//It results unique list 
+SELECT    DISTINCT state
+ 
+FROM  sql_store.customers;
+
+Assignment 1:
+SELECT  
+	
+	name,
+	
+	unit_price,
+    
+	(unit_price*1.1) as "new price"
+
+FROM products;
+
+
+USING OF COMPARISON OPERATORS :>,>=,<,<=,=,!= (or) <>
+
+SELECT *
+
+FROM customers
+
+-- WHERE points>3000;
+
+-- WHERE state !='vA';
+
+-- WHERE birth_date >'1990-01-01';
+
+
+SELECT *
+
+FROM orders
+
+WHERE order_date > '2019-01-01';
+
+
+SELECT *
+
+FROM customers
+
+-- WHERE birth_date > '1990-01-01' OR points >1000;
+
+WHERE birth_date <= '1990-01-01' AND points < 1000;
+
+ //Rather than using this we can use NOT
+-- WHERE NOT (birth_date > '1990-01-01' OR points >1000);
+
+
+-- (points>1000  AND state='VA');
+
+
+SELECT *
+
+FROM  customers
+
+// Here we are comparing multiple expression so we have to write in this way
+-- WHERE state='VA' OR state='GA' OR state='FL';   
+//WHERE state='VA' OR 'GA'--- It is false because the boolean value is comparing with expression so it is an error in sql.
+//So if we want to compare an attribute with list of values we can use IN
+-- WHERE state IN('VA','FL','GA');
+
+-- WHERE state NOT IN ('VA','FL','GA');
+
+
+SELECT *
+
+FROM  products
+
+WHERE quantity_in_stock IN(49,38,72); // Here we are comparing the attribute quantity with multiple values .so we can use IN (or) OR.
+//WHERE quantity_in_stock=49 OR quantity_in_stock=38  OR  quantity_in_stock=72
+

@@ -1,0 +1,160 @@
+//When we want to compare the range of values then we have to use BETWEEN 
+
+SELECT *
+
+FROM customers
+
+-- WHERE points>=1000 AND points<=3000;
+
+-- WHERE points BETWEEN 1000 AND 3000;  //HERE 1000 and 3000 are inclusive
+ 
+WHERE birth_date BETWEEN '1990/01/01' AND '2000/01/01';
+
+
+
+//We want to get specific Pattern  can use LIKE operator
+SELECT *
+
+FROM customers
+
+WHERE last_name LIKE 'b%'; 
+//Here b is case insensitive and after b there may be 0 or any  no of characters .Here 'b%' refers to the type of pattern  compare.
+
+WHERE last_name LIKE 'brush%';
+WHERE last_name LIKE '%b%';
+//here b can be present in first or in middle or in last.  or It contain any number of characters before b and after b.
+
+SELECT *
+
+FROM customers
+
+WHERE last_name LIKE '%y'; //Here the name end with character y
+WHERE last_name LIKE '______y'; //Here the name must contain 6 characters and last character end with y
+WHERE last_name LIKE 'B_____y';//Here the name starts with B and end with y and in between it has exactly  any 4 characters.
+// Here the name must contain 6 characters and first character contains  'b' last character end with 'y'
+
+//% => represents any number of character
+//_ => represents  single character
+
+
+SELECT *
+
+FROM customers
+
+WHERE address LIKE '%avenue%' OR 
+address LIKE '%TRAIL%';
+
+SELECT *
+
+FROM customers
+
+WHERE phone NOT LIKE '%9';
+ //When we use this we get the customers data where the phone number does not end with 9
+
+regexp inplace of like we can use this.
+It can  be used to compare the complex patterns.
+SELECT *
+
+FROM customers
+
+-- WHERE last_name LIKE '%FIELD%';
+
+-- WHERE last_name REGEXP 'field$';
+
+-- WHERE last_name REGEXP 'field$|MAC|ROSE';
+
+-- WHERE last_name REGEXP '[A-P]E';
+
+ ^ Beginning
+$  end of string
+| multiple string(logical or)
+[-] range
+[abcd]  (match any single character in box)
+
+
+SELECT *
+
+FROM customers
+
+WHERE first_name REGEXP 'ELKA|AMBUR';
+ //fnames contain elka or ambur
+-- WHERE last_name REGEXP 'EY$|ON$';
+ //lname have to end with ey or on
+--  WHERE last_name REGEXP  '^ MY|SE';
+ //lname start with my or contains se
+ -- WHERE last_name REGEXP  'B[RU]' ;"br|bu";
+ //lame contains B followed by r or u.
+The IS NULL
+SELECT *
+FROM customers
+WHERE phone IS NULL;
+
+SELECT *
+FROM customers
+WHERE phone IS NOT NULL;
+
+//GET THE ORDERS THAT ARE NOT SHIPPED
+SELECT *
+
+FROM orders
+
+WHERE shipped_date IS NULL; 
+
+//How to sort the data by using sort by clause.If we dont write any one then we it sort based on ASC .If we write DESC then ir sorts based on descending order
+
+-- SELECT * 
+
+SELECT first_name,last_name ,10 AS POINTS
+
+FROM customers
+
+-- ORDER BY first_name DESC;
+ //We can sort based on fname in desc
+-- ORDER BY state DESC,first_name ;
+ 
+//We can sort based on state in DESC .If two records have same state then sort them based on fname .
+-- ORDER BY birth_date;
+ //sort based on birthdate 
+-- ORDER BY POINTS;
+
+ORDER BY 1,2 ;//sort based on first and second column
+
+
+Assignment:
+
+ SELECT *,quantity* unit_price AS total_price
+
+FROM order_items
+
+--  ORDER BY  quantity* unit_price DESC;
+
+WHERE order_id=2  
+
+ORDER BY  total_price DESC;
+
+How to Limit the number of  records.It will always at the end of query.
+
+SELECT * 
+
+FROM customers
+
+ LIMIT 3
+  //Here it will display the first 3 rows
+
+SELECT * 
+
+FROM customers
+
+ LIMIT 6,3;
+  //Here it skips first 6 then display 3 items from next
+
+//Get the top three loyal customers
+SELECT * 
+
+FROM customers
+
+//optionally where
+ORDER BY points DESC
+ 
+LIMIT 3;
+
