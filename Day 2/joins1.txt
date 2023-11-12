@@ -1,0 +1,87 @@
+Joins:
+When we want to retrieve the data from multiple tables.Then we have to use joins
+
+-- SELECT * 
+
+ SELECT  order_id,o.customer_id,last_name,first_name
+
+//If we dont use tablename.customer_id then it is repeated in multiple tables so it shows an error.Because it leads to ambiguity
+FROM orders o    //use o instead of orders
+
+INNER JOIN customers c
+    // INNER key word is optional for inner join	
+  ON o.customer_id=c.customer_id;
+ //after on condition 
+
+
+-- SELECT order_id,product_id,p.name
+
+ -- FROM  orders o
+
+-- JOIN  products p
+ 
+-- ON o.customer_id=p.product_id;
+ 
+
+SELECT order_id,p.product_id,quantity,oi.unit_price,p.unit_price
+ FROM order_items oi
+ 
+JOIN products p 
+ 
+ON oi.product_id=p.product_id;
+
+
+we can select tables across the data bases also
+
+USE sql_inventory;
+
+
+//Here we are in sql_inventory DB .So order items is not present in sql_inventory DB  . so we have to prefix the DB name for order_items table.
+
+SELECT *
+
+FROM  sql_store.order_items oi
+
+JOIN products p
+      
+	ON oi.product_id=p.product_id;
+
+
+
+SELF JOINS:
+	Here self join means joining with the same table 
+-- SELECT e.employee_id,e.first_name,m.first_name AS MANAGER
+
+
+SELECT *
+
+FROM employees e
+
+JOIN employees m
+	
+   ON e.reports_to=m.employee_id;
+
+ 
+
+USE sql_store;
+-- SELECT o.order_id,o.order_date,c.first_name,c.last_name,os.name AS STATUS
+SELECT *
+FROM orders o
+JOIN customers c
+  ON o.customer_id =c.customer_id;
+JOIN order_statuses os
+   ON o.status=os.order_status_id
+
+ 
+-- invoice payments,client name,payments table ,Name of the client payment method
+Use sql_invoicing;
+
+SELECT p.date,p.invoice_id,p.amount,c.name,pm.name
+
+FROM payments p
+
+JOIN clients c ON p.client_id=c.client_id
+
+JOIN payment_methods pm
+
+ON p.payment_method=pm.payment_method_id;
