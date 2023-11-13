@@ -1,0 +1,92 @@
+SELECT *
+
+FROM  order_items oi
+
+JOIN order_item_notes  oin
+	
+ON  oi.order_Id =oin.order_Id
+    
+AND oi.product_id=oin.product_id;
+
+-- SELECT *
+
+-- FROM  orders o
+ 
+-- JOIN customers c
+
+-- 	ON o.customer_id=c.customer_id;
+
+
+-- IMPLICIT JOIN 
+--
+   SELECT *
+
+FROM  orders o, customers c
+
+WHERE o.customer_id=c.customer_id;
+ 
+
+OUTER JOIN:
+These are of two types .Left join ,Right Join 
+When we use Left join .It returns the all the recordsof table  specified  in the command of table left side of join .
+It means for customer table it returns all the values of c.customer_id,c.first_name .But for orders table 
+it only return the records of specified data.And in remaining places it returns null.
+
+SELECT c.customer_id,
+		
+	c.first_name,
+       
+	 o.order_id
+
+FROM  customers c
+
+LEFT JOIN orders o
+
+ON o.customer_id=c.customer_id
+
+ORDER BY c.customer_id; 
+
+In right join it gives all the values.
+SELECT c.customer_id,
+		
+	c.first_name,
+       
+	 o.order_id
+
+FROM  customers c
+
+RIGHT JOIN orders o
+
+ON o.customer_id=c.customer_id
+
+ORDER BY c.customer_id; 
+
+
+SELECT c.customer_id,
+
+	c.first_name,
+        
+	o.order_id
+
+FROM  orders o
+
+RIGHT outer JOIN customers c
+
+ON o.customer_id=c.customer_id
+
+ORDER BY c.customer_id; 
+
+
+SELECT p.product_id,
+
+               p.name,
+     
+               o.quantity
+
+FROM  products p
+
+LEFT JOIN order_items o
+
+ON p.product_id=o.product_id
+
+ORDER BY p.product_id; 
