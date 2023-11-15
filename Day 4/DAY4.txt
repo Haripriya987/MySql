@@ -1,0 +1,184 @@
+outer join between multiple tables:
+we get all the customers whether they have an order or not
+ 
+SELECT c.customer_id,
+	c.first_name,
+	o.order_id,
+	sh.name AS shipper
+FROM 	customers c
+LEFT JOIN orders o
+ON	c.customer_id=o.customer_id
+LEFT JOIN	shippers sh
+ON	o.shipper_id=sh.shipper_id
+//It is not true for some conndtions when we use inner join .So we are using leftjoin
+ORDER BY c.customer_id;
+
+
+SELECT c.customer_id,
+	c.first_name,
+	o.order_id,
+	sh.name AS shipper
+FROM 	customers c
+LEFT JOIN orders o
+ON	c.customer_id=o.customer_id
+ JOIN	shippers sh   
+//If we use inner join here then we get the only orders which have shipper ids
+ON	o.shipper_id=sh.shipper_id
+ORDER BY c.customer_id;
+
+
+SELECT o.order_date,
+		
+	o.order_id,
+     
+	   c.first_name AS customer,
+      
+	  sh.name AS shipper,
+      
+ 	 os.name
+   
+ FROM orders o
+    
+ JOIN customers c
+    
+ON o.customer_id=c.customer_id
+    
+LEFT JOIN shippers sh
+		
+ON 
+o.shipper_id=sh.shipper_id
+	
+JOIN order_statuses os
+  
+ON o.status=os.order_status_id
+  
+ORDER BY os.name;
+
+
+SELF OUTER JOINS:
+//It is self inner join
+SELECT e.employee_id,
+		
+e.first_name,
+        
+m.first_name AS MANAGER
+
+FROM employees e
+
+JOIN employees m
+	
+ON e.reports_to=m.employee_id;
+
+//In this it return the employees who return to manager only.But it does not return the manger details in e.first name.because we are using self inner join.
+
+If we need all employees those report to manager or not .Then we can use self outer joins:
+SELECT e.employee_id,
+		
+e.first_name,
+        
+m.first_name AS MANAGER
+
+FROM employees e
+
+LEFT JOIN employees m
+	
+ON e.reports_to=m.employee_id;
+
+
+USING CLAUSE:
+
+SELECT o.order_id,
+		
+c.first_name,
+        
+sh.name
+
+FROM orders o
+
+JOIN  customers c
+
+-- ON o.customer_id=c.customer_id;
+
+//here we can simplify the code by "using" keyword.But it can be 
+used only the column names are equal.Here in both orders and customers table they have same column name  as customer_id only.
+USING (customer_id)
+
+LEFT JOIN shippers sh
+
+USING (shipper_id);
+
+
+
+SELECT *
+
+FROM order_items OI
+
+JOIN order_item_notes OIN
+
+-- ON OI.order_id=OIN.order_Id  AND
+
+--       OI.product_id=OIN.product_id;
+
+USING (order_id,product_id);
+
+SELECT  P.date,
+		
+	C.name AS client,
+    
+	 P.amount,
+	
+PM.name
+
+FROM payments P
+
+JOIN clients C
+
+USING(client_id)
+
+JOIN payment_methods PM
+
+ON PM.payment_method_id=P.payment_method;
+
+
+//Natural joins means they can join based on the (common)same cloumn names in the tables.Sometimes it produces unexpected results.we don't explicity mention the colum names to join.Easy to code
+SELECT o.order_id,
+		
+c.first_name
+
+FROM	orders o
+
+NATURAL JOIN customers c
+
+CROSS JOIN:
+in this we can join or combine every record from first table with every record from second table.that's why we don't have a condition .
+ex:
+If we have a table of sizes and table of colors in that condition we can use this cross join.
+
+SELECT 
+c.first_name,p.name 
+
+FROM customers c
+
+CROSS JOIN  products p
+  //explicit syntax
+ORDER BY  c.first_name;
+//Here no need to use this cross join
+
+For implicit syntax we can use at from condition only
+SELECT 
+c.first_name,p.name 
+
+FROM customers c, products p
+
+ORDER BY  c.first_name;
+
+//Recommend to use explicit syntax
+
+SELECT sh.name AS shipper
+p.name as product
+-- FROM shippers  sh,products  p    //Using implicit
+ FROM shippers  sh   //Using explicit
+
+CROSS JOIN  products 
+ p
+order by shipper_id;
