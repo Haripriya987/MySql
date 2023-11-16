@@ -1,0 +1,76 @@
+*By using joins we can combine colums from multiple tables.
+*By using union we can combine rows .
+
+SELECT 
+	
+	order_id,
+    
+	order_date,
+    
+	'Active' AS status
+
+ FROM ORDERS
+
+ WHERE ORDER_DATE>='2019-01-01'
+
+ UNION
+ 
+SELECT 
+	
+	order_id,
+
+	order_date,
+   
+	 'Archived' AS status
+
+ FROM ORDERS
+ 
+WHERE ORDER_DATE<'2019-01-01';
+UNION keyword is used to combine multiple records from multiple queries.
+It results as a single set.
+*No of columns each query returns is same .Otherwise it results error.
+
+
+SELECT  CUSTOMER_ID,
+		
+	first_name,
+      
+ 	 points,
+       
+	 'BRONZE' AS TYPE
+
+FROM customers
+
+WHERE points <2000            
+ 
+UNION
+
+SELECT  CUSTOMER_ID,
+		
+	first_name,
+  	points,
+
+	'SILVER' AS medal 
+
+FROM customers
+
+WHERE points >2000 AND points<= 3000
+
+UNION
+
+SELECT  CUSTOMER_ID,
+		
+	first_name,
+ 
+	       points,
+   
+     'GOLD' AS medal
+
+FROM customers
+
+WHERE points >3000
+
+ORDER BY first_name;       
+--ORDER BY customer_id;             
+      
+        
