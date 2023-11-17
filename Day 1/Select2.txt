@@ -100,7 +100,7 @@ FROM orders
 
 WHERE shipped_date IS NULL; 
 
-//How to sort the data by using sort by clause.If we dont write any one then we it sort based on ASC .If we write DESC then ir sorts based on descending order
+//How to sort the data by using order by clause.If we dont write any one then we it sort based on ASC .If we write DESC then ir sorts based on descending order
 
 -- SELECT * 
 
