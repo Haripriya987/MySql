@@ -1,0 +1,141 @@
+SELECT ROUND(5.73)
+SELECT ROUND(5.7367,1)  => 5.7
+SELECT TRUNCATE(5.7345,2) => 5.73
+SELECT CEILING(5.73) => GREATER THAN OR EQUAL TO THAT NO 6
+SELECT FLOOR(5.73)
+ LESS THAN OR EQUAL TO THAT NO 
+SELECT ABS(-5.2)  =>5.2
+SELECT ABS(5.2)  => 5.2
+SELECT RAND() =>generates floating number between 0 to 1
+
+
+String Functions:
+SELECT LENGTH('string')
+SELECT UPPER('string')
+SELECT LOWER('STRING')
+SELECT LTRIM('   Sky')
+SELECT RTRIM('Sky     ')
+SELECT TRIM('   Sky    ')
+SELECT LEFT('Skyhigh',4)
+SELECT RIGHT('Skyhigh',4)
+SELECT SUBSTRING('Skyhigh',2,3)  =>YHI
+SELECT LOCATE('h','Skyhigh') => RETURN INDEX (case sensitive)
+If the character not present then returns 0
+SELECT LOCATE('high','Skyhigh')
+SELECT REPLACE('Skyhigh','high','dive')
+SELECT CONCAT('first','last')
+
+SELECT CONACAT(first_name,' ',last_name) AS full_name
+FROM customers
+
+//Date Functions:
+SELECT NOW()  => It results present date and time
+SELECT CURDATE(),CURTIME
+SELECT YEAR(NOW())  =>RETURNS YEAR
+SELECT MONTH(NOW())
+SELECT DAY(NOW())
+SELECT DAYNAME(NOW()) 
+SELECT MONTHNAME(NOW())
+SELECT HOUR(NOW())
+SELECT MINUTE(NOW())
+SELECT SECOND(NOW())
+SELECT EXTRACT(NOW())  
+SELECT EXTRACT(DAY FROM NOW())  
+SELECT EXTRACT(MONTH FROM NOW())  
+SELECT EXTRACT(YEAR FROM NOW())  
+SELECT EXTRACT(NOW())  
+
+
+//EXERCISE
+
+SELECT * 
+FROM orders
+WHERE YEAR(order_date) = (YEAR(NOW()))
+
+
+FORMATTING DATES AND TIMES
+'YYYY-MM-DD'
+
+SELECT DATE_FORMAT(NOW(),' %y') =>Two digit year
+SELECT DATE_FORMAT(NOW(),' %Y') =>Four digit year
+SELECT DATE_FORMAT(NOW(),' %m') =>returns month no
+SELECT DATE_FORMAT(NOW(),' %M') =>MONTH NAME 
+SELECT DATE_FORMAT(NOW(),' %d') =>day no
+SELECT TIME_FORMAT(NOW(),' %H : %i  %p') =>HOUR,MINUTES and AM or PM
+
+calculating Dates and Times:
+SELECT DATE_ADD(NOW(), INTERVAL 1 DAY)
+SELECT DATE_ADD(NOW(), INTERVAL 1 YEAR)
+SELECT DATE_ADD(NOW(), INTERVAL -1 YEAR)
+SELECT DATE_SUB(NOW(), INTERVAL 1 YEAR)
+SELECT DATEDIFF('2019-01-05  ','2019-01-01') =>POSITIIVE
+SELECT DATEDIFF('2019-01-01  ','2019-01-05') =>NEGATIVE
+SELECT TIME_TO_SEC('09:00') - TIME_TO_SEC('09:02')
+
+
+//Instead of showing null display them as not label.Here we are substituting a  value it results if it is null
+SELECT order_id,
+              IFNULL(shipper_id, ' Not assigned' ) AS Shipper 
+FROM ORDERS
+
+//But here we are giving list of values.It returns first non null value
+SELECT order_id,
+              COALESCE(shipper_id,comments, ' Not assigned' ) AS Shipper 
+FROM ORDERS
+
+
+SELECT CONCAT(first_name ,' ',last_name) AS customer,
+	COALESCE(phone,'unknown') AS phone
+FROM CUSTOMERS
+
+
+IF FUNCTION
+IF(EXPRESSION,FIRST,SECOND)
+
+SELECT 
+	order_id,
+	order_date,
+	IF(
+	YEAR(order_date) = YEAR (NOW()),
+	'Active',
+	'Archived') as Category
+FROM orders
+
+SELECT product_id,
+	name,
+	count(*) AS orders,
+	if( COUNT(*) >1, 'Many Times','Once') As frequency
+from products
+join  order_items 
+USING (product_id)
+group by product_id,name
+
+SELECT 
+	order_id,
+	CASE
+		WHEN YEAR(order_date) =YEAR(NOW()) THEN 'Active'
+		WHEN YEAR(order_date) =YEAR(NOW())-1 THEN 'Last Year'
+		WHEN YEAR(order_date) < YEAR(NOW())-1 THEN 'Archived'
+		ELSE 'Future'
+	END AS  category
+FROM orders
+
+
+SELECT 
+	CONCAT(first_name,' ' ,last_name) as Customer,
+		points,
+   
+	 CASE
+	
+	WHEN points>=3000 THEN  'GOLD'
+
+                 WHEN points>=2000 THEN  'SILVER'
+			ELSE 'BRONZE'
+	
+	END AS  CATEGORY	
+
+FROM customers
+
+
+
+
