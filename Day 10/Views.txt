@@ -1,0 +1,109 @@
+Views:
+	If we can join multiple subbqueries in a query.Then it will become complex.Then views can be used.
+views are extremely powerful.They can be simplified for future queries.we can reuse views .It is a virtual table.
+
+
+//Creating a view
+CREATE VIEW sales_by_client AS
+SELECT 
+	c.client_id,
+	c.name,
+	SUM(invoice_total) AS total_sales
+FROM clients c
+JOIN    invoices i
+USING (client_id)
+GROUP BY client_id,name
+
+//To get the result
+
+SELECT *
+FROM sales_by_client
+ORDER BY total_sales DESC; //we can apply different filters here also
+JOIN 
+
+CREATE VIEW  clients_balance  AS
+
+SELECT   client_id,
+		
+	name,
+  
+      SUM(invoice_total - payment_total)
+ AS Balance
+
+FROM CLIENTS
+
+JOIN INVOICES
+
+USING (client_id)
+
+GROUP BY (client_id)
+
+//Droping the view
+DROP VIEW  clients_balance
+
+//UPDATABLE VIEWS
+IF view does not contain any of them in view .Then it is called as updatable views
+--DISTINCT
+-- AGGREGE FUNCTION 
+--GROUP BY/ HAVING
+-- UNION
+
+CREATE OR REPLACE VIEW invoices_with_balance AS
+SELECT 
+	invoice_id,
+	number,
+	client_id,
+	invoice_total,
+	payment_total,
+	invoice_date,
+	invoice_total-payment_total AS balance,
+	due_date,
+	payment_date
+FROM 	invoices
+WHERE (invoices_total - payment_total) > 0
+
+we can modify this updatable view
+
+DELETE  FROM  invoices_with_balance 
+WHERE invoice_id=1;
+
+UPDATE invoices_with_balance 
+SET due_date =DATE_ADD(due_date,INTERVAL 2 DAY)	
+WHERE invoice_id=2;
+
+//we can also insert new invoice in this view .But it is tricky .If it works only all the columns in underlying table it has.
+ 
+UPDATE invoices_with_balance 
+SET payment_total = invoice_total
+WHERE invoice_id=2;
+//In this case the invoice no 2  is disappear.This is the default behaviour of views.When we update or delete from the view some of the rows will disappear.
+So we have to prevent this type of behaviour by using this line at the end of the view
+// WITH CHECK OPTION
+By using this line modified rows can no longer be included in this view
+
+
+CREATE OR REPLACE VIEW invoices_with_balance AS
+SELECT 
+	invoice_id,
+	number,
+	client_id,
+	invoice_total,
+	payment_total,
+	invoice_date,
+	invoice_total-payment_total AS balance,
+	due_date,
+	payment_date
+FROM 	invoices
+WHERE (invoices_total - payment_total) > 0
+WITH CHECK OPTION
+
+
+//Benefits of views
+
+SIMPLIFY QUERIES
+REDUCE THE IMPACT OF CHANGES IN DB DESIGN
+RESTRICT ACCESS TO DATA FOR UNDERLYING TABLES
+
+
+
+
