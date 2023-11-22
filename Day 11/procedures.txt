@@ -1,0 +1,271 @@
+Stored Procedures:
+	A stored procedure is a database object that contains block of sql code .In our application programs we call this procedures to get or save the data.These are very powerful.
+Benefits of stored procedures
+store and organize sql.
+Faster execution.
+Data security.
+
+Creating a stored procedure:
+
+DELIMITER $$ 
+CREATE PROCEDURE get_clients()
+BEGIN
+	SELECT * FROM   clients
+END $$
+
+DELIMITER ;
+
+CALL get_clients()
+
+
+DELIMITER $$ 
+CREATE PROCEDURE get_invoices_with_balance()
+BEGIN
+SELECT * 
+
+FROM sql_invoicing.invoices
+
+WHERE (invoice_total-payment_total)>0;
+
+END $$
+
+DELIMITER ;
+
+//call a procedure
+CALL get_invoices_with_balance()
+
+
+//creating procedures using MYSQL work Bench
+
+we can easily create procedures in MYSQL work Bench.Here we have to right click on procedures and click on create procedures.And in this we have to focus on sql statements only.so it is easy
+
+//Dropping stored procedures
+//It is always a good practise to do like this
+
+DROP PROCEDURE IF EXISTS get_clients ;
+
+DELIMITER $$
+CREATE PROCEDURE get_clients()
+BEGIN
+	SELECT * FROM clients;
+END $$
+DELIMITER ;
+
+
+//ADD PARAMETERS TO PROCEDURES
+we typically use parameters to pass a values to the stored procedures.
+But we can also  use parameters to send values to the calling programs
+
+DROP PROCEDURE IF EXISTS get_clients_by_state;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE get_clients_by_state
+
+(
+
+state CHAR(2)
+
+)
+
+BEGIN
+
+SELECT * 
+FROM clients c
+
+WHERE c.state=state;
+
+END $$
+
+DELIMITER ;
+
+CALL  get_clients_by_state('CA')
+ 
+
+DROP PROCEDURE IF EXISTS get_invoices_by_client
+DELIMITER $$
+CREATE PROCEDURE get_invoices_by_client
+(
+client_id INT
+)
+BEGIN
+SELECT * 
+FROM invoices i
+WHERE i.client_id=client_id; 
+END $$
+DELIMITER ;
+
+//PARAMETERS WITH DEFAULT VALUES:
+DROP PROCEDURE IF EXISTS get_clients_by_state;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE get_clients_by_state
+
+(
+
+state CHAR(2)
+
+)
+
+BEGIN
+
+	IF state IS NULL THEN
+	     SET     state='CA'; --  SELECT * 
+FROM clients c
+
+	ELSE
+	SELECT * 
+FROM clients c
+
+	WHERE c.state=state;
+	END IF;
+	
+	
+END $$
+
+DELIMITER ;
+
+CALL  get_clients_by_state('CA')
+call sql_invoicing.get_clients_by_state(NULL);
+
+
+DROP PROCEDURE IF EXISTS get_clients_by_state;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE get_clients_by_state
+
+(
+
+state CHAR(2)
+
+)
+
+BEGIN
+
+	SELECT * 
+FROM clients c
+
+	WHERE c.state=IFNULL(state,c.state);
+//If first parameter is null then it returns c.state
+END $$
+
+DELIMITER ;
+
+
+//
+DROP PROCEDURE IF EXISTS get_payments;
+
+DELIMITER $$
+
+CREATE PROCEDURE get_payments
+
+(
+client_id INT(4),
+
+payment_method_id TINYINT(1) //0-255
+
+)
+
+BEGIN
+
+SELECT *
+
+FROM payments p
+
+WHERE p.client_id=IFNULL(client_id,p.client_id)  AND 
+p.payment_method=IFNULL(payment_method_id,p.payment_method); 
+
+END $$
+
+
+DELIMITER ;
+
+
+//ARGUMENTS :In procedure we  define and supply two parameters
+called as arguments 
+//PARAMETERS:
+call sql_invoicing.get_payments(NULL, 1);
+
+
+//Parameter  validation
+So far we have seen procedures only select data.
+But with the help of procedures we can also insert,update,delete data
+
+CREATE PROCEDURE make_payment
+(
+  invoice_id INT,
+  payment_amount DECIMAL(9,2),
+payment_date DATE
+)
+BEGIN
+	IF payment_amount <=0 THEN
+	SIGNAL SQLSTATE '22003' 
+	SET MESSAGE_TEXT='Invalid payment amount'
+	END IF;
+	
+	UPDATE invoices i
+	SET
+	i.payment_total=payment_amount,
+	i.payment_date=payment_date
+	WHERE i.invoice_id=invoice_id;
+END
+
+
+//OUTPUT PARAMETERS:
+To return values to the calling program
+
+CREATE PROCEDURE get_unpaid_invoices_for_client
+(
+client_id INT,
+OUT invoices_count INT,
+OUT invoices_total DECIMAL(9,2)
+)
+BEGIN
+	SELECT COUNT(*),SUM(invoice_total)
+	INTO invoices_count,invoices_total
+	FROM invoices i
+	WHERE i.client_id=client_id
+	AND payment_total =0;	
+END
+
+
+
+set @invoices_count=0; //userdefined variable.It is an object to store a single value in memory.They are prefix with '@'
+set @invoices_total=0;
+call sql_invoicing.get_unpaid_invoices_for_client
+(3,@invoices_count,@invoices_total);
+select @invoices_count,@invoices_total;
+
+
+//USER DEFINED Variables:
+These are variables that we deifine using set keyword and prefix with @.we often use this variables when procedures have output parameters.
+
+--User or session variables ://when client disconnect from the mysql then these variables are freeze out;
+set @invoices_count=0
+
+ --Local variables //These are inside stored procedure function
+
+
+CREATE PROCEDURE  get_risk_factor()
+BEGIN
+--risk_factor = invoices total/invoice_count*5;
+DECLARE risk_factor DECIMAL(9,2) DEFAULT NULL;
+DECLARE invoices_total DECIMAL(9,2);
+DECLARE invoices_count INT;
+
+SELECT COUNT(*),SUM(invoice_total)
+INTO invoices_count,invoices_total
+FROM invoices
+
+SET  risk_factor = invoices total/invoice_count*5;
+
+SELECT risk_factor;
+
+END
+
+

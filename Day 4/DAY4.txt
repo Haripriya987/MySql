@@ -56,6 +56,7 @@ ORDER BY os.name;
 
 
 SELF OUTER JOINS:
+
 //It is self inner join
 SELECT e.employee_id,
 		
@@ -138,6 +139,7 @@ USING(client_id)
 JOIN payment_methods PM
 
 ON PM.payment_method_id=P.payment_method;
+
 
 
 //Natural joins means they can join based on the (common)same cloumn names in the tables.Sometimes it produces unexpected results.we don't explicity mention the colum names to join.Easy to code
