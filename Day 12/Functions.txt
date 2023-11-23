@@ -1,0 +1,39 @@
+FUNCTIONS:
+Functions are very similar to procedures.But the main difference is functions can only return only a single value.unlike procedures it does not return result sets. 
+Creating function is similar to the syntax of procedures
+
+DROP FUNCTION IF EXISTS get_risk_factor_for_client;
+CREATE FUNCTION get_risk_factor_for_client
+(
+client_id INT
+)
+RETURNS INTEGER
+-- DETERMINISTIC  //It always returns same output for same input
+READS SQL DATA //it means it has select function,it reads some data.
+-- MODIFIES SQL DATA // we have insert,update,delete data
+BEGIN
+	DECLARE risk_factor DECIMAL(9,2) DEFAULT 0;
+	DECLARE invoices_total  DECIMAL(9,2)
+	DECLARE  invoices_count INT
+
+	SELECT COUNT(*),SUM(invoices_total)
+	INTO invoices_count,invoices_total
+	FROM invoices i
+	WHERE i.client_id=client_id
+	SET risk_factor = invoices_total/invoices_count *5;
+	RETURN IFNULL(risk_factor,0);
+END
+
+
+SELECT client_id,name,
+	get_risk_factor_for_client(client_id) AS risk_factor
+FROM clients
+
+
+//Different naming conventions 
+procGetRiskFactor
+get_risk_factor
+getRiskFactor
+
+DELIMITER $$
+DELIMITER //
