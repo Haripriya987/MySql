@@ -1,0 +1,126 @@
+//
+Transactions:
+	A Group of SQL statements that represent a single unit of work.
+
+Eg:Bank Transactions
+
+we use transactions in situations where we have to make multiple changes to database and we want all changes to be succeed or failed together as a single unit .
+
+Transaction Properties :
+1)Atomicity
+2)Consistency
+3)Isolation
+4)Durability
+
+//
+Creating Transaction:
+
+USE sql_store;
+
+START TRANSACTION;
+
+INSERT INTO orders (customer_id,order_date,status)
+VALUES (1,'2019-01-01' ,1);
+
+INSERT INTO order_items
+VALUES(LAST_INSERT_ID(),1,1,1);
+
+COMMIT;
+
+ROLLBACK;
+
+//MYSQL  wraps every single statement inside a transaction and commit automatically if it does not raise any error using a system variable called auto commit;
+
+
+//CONCURRENCY AND LOCKING:
+In a real world two or more users can access the same data ata same time.This is called concurrency.
+It has a problem that when one user modifies the data other user has to retrieving the data.
+How to handle concurrency in mysql
+
+USE sql_store;
+START TRANSACTION;
+update customers
+SET points=points+10
+WHERE customer_id=1;
+COMMIT;
+
+common problems:
+1) Lost Updates :If the two transactions try to update the same row
+and without using  locks.The transaction commits later will override the transactions done by previous transaction.
+
+	Scenario  we have two transactions one modifies the points and another modifies the state
+		John  ,NY ,10
+     A				      B			
+John  ,NY ,10			John  ,NY ,10
+John  ,VA ,10			John  ,NY ,20
+
+To avoid this we have to use locks
+
+2)Dirty Reads : It happens when a transaction reads the data  that has not been commited yet.
+
+	A
+UPDATE customers
+SET points=20;		
+			  B	
+			select points
+RollBack
+To solve this problem we need  to provide level of isolation around transaction.The data modified by transaction is not immediately visible to another transaction unless it is commited.
+     Standard sql has define 4 isolation levels one of them is  read Committed.with this we can only read committed data.
+  
+
+3)Non repeatable Reads:
+		During a course of transaction it reads twice get incorrect results.
+
+	A
+SELECT points
+      (10)
+			      B
+			UPDATE points
+SELECT points
+  (0)
+
+ It is handled by another level of isolation called REPEATABLE READ
+with this our reads are repeatable and consistent .Even if the data gets changed by another transaction.
+
+4)PHANTOM READS
+	A			    B
+SELECT customers		UPDATE points	 
+WHERE points>10
+COMMIT
+
+PHANTOM means ghost.Some times data will be suddenly appears
+and missed them in query .It just added ,updated or removed after executing the query.
+
+It can be solved by SERIALIZABLE.This will guarante that transaction will be over of changes by another transactions of data.If other transactions will change data then it will wait upto that will be committed.(transactions are executed serially)
+
+//Transaction Isolation Levels
+
+	Lost	Dirty	Non-Repeating	Phantom
+                	update	Reads	Reads		Reads
+
+Read-un
+commited
+
+Read
+commited		   yes
+
+Repeatble	  yes	  yes	     yes
+Read
+
+Serializable  yes	  yes	     yes		yes
+
+
+More we increase Isolation level increases the more performance and scalable problems we gonna experience.Because more locks will be involved to isolate transaction
+It puts overhead on our server. It needs extra resources interms of cpu,memory.
+
+so Lower isolation gives more concurrency. so more users can access same data at the same time.But we can achieve better performance.
+
+In mysql the default isolation level  is Repeatble reads it takes less time  compared to serializable but unless we have to face the Phantom reads.In that scenario use Serializable level.
+
+As for first two levels where we can use in the situation where bulk reporting but yppu don't need  precise consistency. or when we want to read the data that is rarely updated.It gives better performance.
+
+SHOW VARIABLES LIKE 'transaction_isolation';
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SET  SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SET GLOBAL TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+ 
