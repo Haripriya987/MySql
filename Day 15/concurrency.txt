@@ -1,0 +1,145 @@
+1)Read UnCommitted Isolation Level:
+
+USE sql_store;
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITED;
+SELECT points
+FROM customers
+WHERE customer_id=1;
+
+
+//Another session
+USE sql_store;
+START TRANSACTION
+UPDATE customers
+SET  points=20
+WHERE customer_id=1;
+ROLLBACK;
+
+
+Read Uncommited is the lowest Isolation Level.At this level we may experience all concurrency Problems.
+
+
+2)Read Commited Isolation Level :
+
+USE sql_store;
+SET TRANSACTION ISOLATION LEVEL READ COMMITED;
+START TRANSACTION;
+SELECT points
+FROM customers
+WHERE customer_id=1;
+SELECT points
+FROM customers
+WHERE customer_id=1;
+COMMIT;
+
+//Another session
+USE sql_store;
+START TRANSACTION
+UPDATE customers
+SET  points=20
+WHERE customer_id=1;
+COMMIT;
+
+In this Transaction Level we cannot see the uncommited data (Dirty Reads).AT THIS TRANSACTION LEVEL we get different values results unconsistent data.(REPEATABLE READS);
+
+
+3.REPEATABLE READS:
+
+USE sql_store;
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+START TRANSACTION;
+SELECT points
+FROM customers
+WHERE customer_id=1;
+SELECT points
+FROM customers
+WHERE customer_id=1;
+COMMIT;
+
+
+//Another session
+USE sql_store;
+START TRANSACTION
+UPDATE customers
+SET  points=40
+WHERE customer_id=1;
+COMMIT;
+
+we get consistent Data.It solves most of the concurrency Problems.
+But at this state we get Phantom reads.
+
+USE sql_store;
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+START TRANSACTION;
+SELECT *
+FROM customers
+WHERE state='VA';
+
+COMMIT;
+
+
+//Another session
+USE sql_store;
+START TRANSACTION
+UPDATE customers
+SET  state='VA'
+WHERE customer_id=1;
+COMMIT;
+
+
+4)SERIALIZABLE TRANSACTION LEVEL
+USE sql_store;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+START TRANSACTION;
+SELECT *
+FROM customers
+WHERE state='VA';
+
+COMMIT;
+
+//Another session
+USE sql_store;
+START TRANSACTION
+UPDATE customers
+SET  state='VA'
+WHERE customer_id=3;
+COMMIT;
+
+use this ISOLATION level whenever we have to prevent phantom reads.Otherwise use default isolation level.
+
+DeadLocks:
+	DeadLocks happens When different transactions cannot complete.Because each transaction holds lot other needs.So both transactions keep wait for each other and they never release each other.
+
+USE sql_store;
+START TRANSACTION;
+UPDATE customers SET state='VA' where customer_id=1;
+UPDATE orders SET status =1 WHERRE order_id=1;
+COMMIT;
+
+
+//ANOTHER  SESSION
+
+USE sql_store;
+START TRANSACTION;
+UPDATE orders SET status =1 WHERRE order_id=1;
+UPDATE customers SET state='VA' where customer_id=1;
+COMMIT;
+
+
+1ST TRANSACTION kept a lock on customer data where id is 1;
+2nd TRANSACTION put a lock on orders where id =1;
+Here to complete a first transaction but transaction already put a lock on orders table where id is 1;
+Same sceario for second Transaction also first transaction already put a lock on customers table where id=1;
+
+Here the problem arises Two transactions are waiting for each other to complete.This is called. DeadLock.
+In this situation MySql will try to trace this transaction as a victim and rolls it back.
+
+Generally Deadlocks are not big issue unless it happens frequently.
+As the developers we should write an application in a way that it reissues the transaction if  it gets rollback  because of a deadlock or we have to display to users as your transaction is failed reexecute the transaction.
+
+There are certain ways to minimize the likelihood of deadlocks but we can't get rid off it.
+
+
+
+
+
