@@ -1,0 +1,169 @@
+MySql DataTypes:
+Strings
+Numeric 
+Date and Times
+Blob
+Spatial
+
+Strings:
+In Strings we have bunch of Datatypes.Most commonly used are
+CHAR (X)         -fixed Length
+VARCHAR (X) - variable length //uesrname,mails,zipcodes,phonenumbers,passwords
+
+Be  consistent
+VARCHAR (50)  For short strings
+VARCHAR(255)  For medium length strings
+VARCHAR(X)   :Max is 65535 characters (~64 kb) 
+MEDIUMTEXT : max is 16 MB //json objects ,CSV strings
+LONGTEXT : Max is 4GB //storing text books,log files (storing textual  data)
+--------------------------------------------------------------------
+TINYTEXT : MAX IS 255 bytes
+TEXT : Max is 64KB
+
+BYTES :
+ENGLISH :1 BYTE
+EUROPEAN MIDDLE-EASTERN :2 BYTES
+ASIAN :3 BYTES
+
+
+///INTEGER:
+1)TINYINT 		  -> 1B (-128 TO 127)
+2)UNSIGNED TINYINT 	  ->1 B [0  to  255]
+3)SMALL INT		  -> 2 BYTES [-32K ,32K]
+4)MEDIUMINT		  -> 3B  [-8M,8M]
+5)INT 			  -> 4B [-2B,2B]
+6)BIGINT			  -> 8B [-9Z,9Z]
+
+ZEROFILL :
+ INT(4)  =>  IT STORES 4 VALUES LIKE  0000,0001,0002
+
+//Use the Smallest data type that suits your needs.
+Queries will perform better.
+
+
+//RATIONALS
+
+DECIMAL (p,s)  
+DECIMAL(9,2) Total 9 digits and 2 digits after decimal
+eg:1234567.89
+  p=> precision  maxium numbers 
+ s=> scale means digits after decimal
+These are used for storing fixed points numbers.These are the numbers that have fixed no of digits after the decimal points.
+
+Synonyms are DECIMAL,DEC,NUMERIC,FIXED
+--------------------------------------------------------------------------------------------
+ //FOR VERY LARGE AND VERY SMALL NUMBERS
+
+FLOAT        4B 
+DOUBLE     8B
+
+//BOOLEAN 
+To store true(1)  or  false(0)  values  we use boolean values.
+BOOL         
+BOOLEAN
+
+
+//ENUMS :
+	If we want to restrict the type of strings in our columns
+ENUM('small' ,'medium','large') //case insensitive
+Generally  these are bad and avoid it.
+If we want to change the enum members then entire table has to be rebuild.so it is expensive when a table has billion records.
+ENUMS are not reusable
+
+Rather than using this enums use separate tables  as sizes .We can reuse the table as well .It is called as Lookup table.
+
+//SETS : similar to ENUMS.But it store more values.
+
+
+//DATE/TIME DataType:
+DATE
+TIME
+DATETIME    8B 
+TIMESTAMP 4B (UPTO 2038)//IT STORES BASICALLY WHEN A ROW IS INSERTED.
+YEAR
+
+//BLOBS:
+WE use blob to store large amount of binary data like images,video,pdfs,word files
+TINYBLOB 	: 255 B
+BLOB      		: 65KB
+MEDIUMBLOB 	: 16MB
+LONGBLOB 	: 4 GB
+
+Generally  speaking better to keep files out of from DataBases. Because Relational DataBases are designed to work with structured relational data not binary data.
+
+problems with storing files in a Database
+Increased Database size
+slower Backups
+Performance problems
+More code to read/write images
+
+//JSON
+Lightweight format for storing and transferring data over internet.
+It uses heavily in mobile and web applications.So most of the time movable apps send data to backend using json.
+
+
+Json object format:
+{
+"KEY" :value;
+}
+
+UPDATE products
+SET properties ='
+{
+"Dimensions" : [1,2,3],
+"weight" : 10,
+"manfacurer " :{"name" :"sony"}
+}
+'
+WHERE product_id=1;
+
+SELECT * FROM products;
+
+
+//ANOTHER WAY TO CREATE JSON OBJECT
+
+UPDATE products
+SET properties=JSON_OBJECT(
+'weight' ,10,
+'dimensions ',JSON_ARRAY(1,2,3),
+'manfacturer', JSON_OBJECT('name','sony')
+)
+WHERE product_id=1;
+
+//we can also extract individual key value pairs
+
+SELECT product_id,JSON_EXTRACT(properties,' $.weight')
+FROM products
+WHERE product_id=1;
+
+
+SELECT product_id,properties -> '$.weight'
+FROM products
+WHERE product_id=1;
+	
+SELECT product_id,properties -> '$.dimensions[0]',
+properties ->> '$.manfacturer.name'//(to get rid of double quotes use two angular braces) 
+FROM products
+WHERE product_id=1;
+
+
+//UPDATE THE JSON OBJECTS	:
+
+UPDATE products
+SET properties=JSON_SET(  //update  existing properties 
+properties,
+'$weight',20,
+'$age',10
+)
+WHERE product_id=1;
+
+
+//REMOVE THE JSON OBJECTS	:
+
+UPDATE products
+SET properties=JSON_REMOVE(  
+properties,
+'$age'
+)
+WHERE product_id=1;
+
