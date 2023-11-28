@@ -1,0 +1,51 @@
+Designing DataBase is at most important.
+
+1)Data Modelling: It is the process of creating a model for the data that we want to store in a database.
+
+1.Understand the requirements
+2.Build a conceptual Model.  visual representation of DB
+3.Build a Logical Model :Abstract DataBase .Independent of DB technology.
+4.Building a Physical Model:Implementation of Logical Model  for a particular DB Technology.PK,views,Data types etc ... 
+
+Conceptual Model:
+	Represents the entities and their relationships
+1)ER diagrams   	
+2)UML diagrams        
+are both ways for visually expressing concepts.
+
+Tools are Microsoft visio,draw.io,Lucid charts
+
+conceptual Model:It does not give actual structure for storing the data.
+It only represents business entities and relationship.We used to understand the problem domain and communicate with domain experts.
+
+logical Model:It has more detail compared to conceptual model.We almost know the structure and tables to store data. 
+
+physical model :It is the implementation of a logical model for the specific database technology.
+
+
+Primary Key :
+It is a column which uniquely identifies the record in a table.
+
+whenever we add a relationship between two tables .One end of the relationship called parent table or primary key Table  and another end is called child table or Foreign Key Table. 
+
+In our example parent able is students table and child table called enrollments table.
+
+Foreign Key :
+A Foreign key is a column or a set of columns in a database table refers to the primary key of another table.It establishes the relation between the tables. 
+ 
+In our example 2 foriegn keys are there for enrollments.one is student_id for enrollments and students.
+another one is course_id  for enrollment and courses.
+
+Now we have to set constraints for foreign key
+Update : SETNULL,CASCADE,NOACTION,RESTRICT
+Delete :  SETNULL,CASCADE,NOACTION,RESTRICT
+Based on Business requirement we have to kept the constraint that needed.To maintain consistency and to prevent the loss of  data we have to set constraints.
+
+Normalization :
+Before we go ahead and to generate  the DataBases tables.We need to 
+ make sure that our design is optimal and does not allow redundancy.
+Because it will complicate the insert ,delete ,update operations. Otherwise we have inconsistent data  and leads to generate invalid reports.
+	 Normalization is the process of reviewing design  and ensures that it is following predefined rules and prevent data Duplication.
+There are basically 7 rules called 7 Normal forms.For almost 99% of Applications we need to apply 3 Normal Forms.
+
+
