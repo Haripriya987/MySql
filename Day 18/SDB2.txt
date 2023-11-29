@@ -1,0 +1,108 @@
+First Normal Form (1NF) :
+Each cell should have a single value and we cannot have repeated columns.
+Earlier we have  created Students,Courses table and enrollment relation between them.
+columns of
+ students table         enrollments table      	enrollment	
+Student_id	course_id		 Student_id	
+first_name		title		course_id		 
+last_name		price		date
+email		instructor		price
+date registered	tags
+
+
+In enrollments table we are violating 1NF.So we have to modify 
+the database.
+ So we are redesigning tags into another table .In this it has tag id,tag
+
+Second Normal Form(2NF):
+	A relation to be in 2NF
+1)It has to be in 1NF and
+2)It does not have any non-prime attribute that is dependent on any proper subset of any candidate key of the relation.A non prime attribute of a relation is an attribute that is not a part of any candidate key of the relation.
+
+//Every table should describe one entity,and every column in that table should describe that entity.
+
+example:
+orders
+order_id   date  customer_name
+  1              ---        ABC
+  2	---        ABC
+
+Here with this design name of customer gets duplicated.So we need 
+to create another table for customers with cid,cname
+
+
+Third NormalForm:
+In 3NF
+1)The entity should be in 3NF
+2)All the attributes in a table are determined only by any non-prime attributes.
+
+A column in a table should not be derived from other columns.
+It helps to reduce Duplication and increase Data Integrity.
+
+//Pragmatic Advice :
+Remove Redundancy and maintain consistency .Start about Logical or conceptual model first.Don't jump into creating tables.Otherwise the design will be messed up.Don't apply normalization rules blindly.Always take requirement into account.
+ 
+//Don't Model the universe:
+Solve today's problems not future problems that may never happen.
+Build a model for your problem domain,not the real world.
+Simplicity is the ultimate sophistication.Take a complex problem simplify,simplify like  no one else.Changes will be happen if we predict and not predict.
+
+
+Forward Engineering a Model:
+Convert a model into real physical DataBase.with the physical model ope and click on DataBase Menu and select Forward Engineer.In the dialog box we have to select a connection .click on next and complete the process.It is better to store  script for future reference.Finally DataBase is generated in our navigation Panel.
+
+Synchronizing a Model For DataBase:
+For already existing DataBase .If we want to modify a table or we want to add a table for existing DataBase.In a realtime we have to replicate the same changes on other databases.Then we  have to synchronize a model for the database.click on Database menu and select Synchronize model and we have to select a connection in dialog box and complete the process.
+
+Reverse Engineer:
+If we want to change the database but we don't have a model.Then  we    have to Reverse Engineer the database to create a model and use that model for future changes.On Database Menu click on Reverse Enginner and complete the process.It will generate a model.It really helpful to uderstand the database design.
+
+Creating DataBases:
+CREATE DATABASE IF NOT EXISTS sql_store2;
+DROP DATABASE IF EXISTS sql_store2;
+
+Creating Tables :
+CREATE DATABASE IF NOT EXISTS sql_store2;
+USE sql_store2;
+DROP TABLE IF EXISTS customers;
+CREATE TABLE  IF NOT EXISTS customers
+(
+	customer_id INT PRIMARY KEY AUTO_INCREMENT,
+	first_name VARCHAR(50) NOT NULL,
+	points INT NOT NULL DEFAULT 0,
+	email VARCHAR(255) NOT NULL UNIQUE,
+);	
+
+ 
+Altering Tables :
+ALTER TABLE customers 
+	ADD last_name VARCHAR(50)  NOT NULL AFTER `first_name`
+	ADD city 	          VARCHAR(50) NOT NULL,
+	MODIFY COLUMN first_name VARCHAR(55) DEFAULT ' ',
+	DROP points;
+
+
+
+//Creating RelationShips :
+CREATE DATABASE IF NOT EXISTS sql_store;
+USE sql_store2;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS customers;
+
+CREATE TABLE  IF NOT EXISTS customers
+(
+	customer_id INT PRIMARY KEY AUTO_INCREMENT,
+	first_name VARCHAR(50) NOT NULL,
+	points INT NOT NULL DEFAULT 0,
+	email VARCHAR(255) NOT NULL UNIQUE,
+);	
+CREATE TABLE orders
+(
+	    order_id   INT PRIMARY KEY,
+	customer_id INT NOT NULL ,
+	FOREIGN KEY fk_orders_customers (customer_id)
+		REFERENCES customer(customer_id)
+	        ON  UPDATE  CASCADE,
+	        ON DELETE  NO ACTION 		
+);
+
