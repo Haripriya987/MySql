@@ -117,7 +117,7 @@ so Lower isolation gives more concurrency. so more users can access same data at
 
 In mysql the default isolation level  is Repeatble reads it takes less time  compared to serializable but unless we have to face the Phantom reads.In that scenario use Serializable level.
 
-As for first two levels where we can use in the situation where bulk reporting but yppu don't need  precise consistency. or when we want to read the data that is rarely updated.It gives better performance.
+As for first two levels where we can use in the situation where bulk reporting but you don't need  precise consistency. or when we want to read the data that is rarely updated.It gives better performance.
 
 SHOW VARIABLES LIKE 'transaction_isolation';
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;

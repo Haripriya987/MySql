@@ -1,0 +1,59 @@
+//How to add relation ship between tables:
+DROP TABLE IF EXISTS orders;
+CREATE TABLE orders
+(
+	order_id 	   INT PRIMARY KEY,
+	customer_id INT NOT NULL,
+	FOREIGN KEY fk_orders_customers (customer_id)
+	REFERENCES customers(customer_id)
+	ON UPDATE  CASCADE,
+	ON DELETE NO ACTION
+)
+
+//ALTERING primary and foreign key constraints 
+
+Creating Relation ship after creating the table
+
+ALTER TABLE orders
+	DROP PRIMARY KEY,
+	ADD PRIMARY KEY (order_id),
+	DROP FOREIGN KEY fk_orders_customers,
+	ADD FOREIGN KEY fk_orders_customer(customer_id)
+	REFERENCES customers (customer_id)
+	ON UPDATE CASCADE
+	ON DELETE NO ACTION;
+
+//Character Sets and collations:
+'abc'
+Character Set is a table that matches each character to a number.
+Some of them supports latin language and some supports the asian language and some of them supports all international languages.
+
+eg : utf8 - it supports all international languages.This is default characterSet in  MySql
+
+collation :Bunch of rows that determine how the characters in a given language are sorted.
+utf8_general_ci : Here it is case insensitive maxlen :3 bytes.
+
+CHAR(10) -> 10*3 =30
+SHOW CHARSET
+
+
+CREATE DATABASE db_name
+	CHARACTER SET latin1
+
+ALTER TABLE table1
+	CHARACTER SET latin1
+
+IN COLUMNS 
+first_name VARCHAR(50) CHARACTER SET latin1 NOT NULL
+
+
+//STORAGE ENGINES :
+Storage Engines determines how the data is stored and what featues are available to us.
+
+SHOW ENGINES
+commonly used MYISAM(old default ) ,InnoDB (present default)
+
+ALTER TABLE customers
+ENGINE = InnoDB
+
+//Don't do this at production level
