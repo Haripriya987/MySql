@@ -1,0 +1,236 @@
+Indexing :
+	Indexes are extremely important in  large databases and 
+high traffic websites.It improves the performance of queries dramatically.
+Indexes are  basically datastructures that database engines are used to quicklify the data bases.
+Database Base Management systems are also use indexes to find the data in the same way like a telephone directory.
+
+If we want to find the customers who are located in california.For this 
+mysql has to scan every record.For a small table it is not a big deal .But when it comes to a table with million of records .As a table grows larger the cost of the query will increase dramatically. 
+	To speed up the query by creating an  index for the state
+column.This is like a creating a directory of customers sorted by the state.Index only  have state of customers and refernces to the records in the customers table.This way faster than reading the records from the table.
+In  a lot of cases indexes are small enough that fit in the memory.
+Because reading data from the memory is always faser than reading data from the Disk.Index helps to find data quickly.But it comes up with cost.
+
+Cost of Indexes :
+Increase the size of database.Because they have to be permanently stores next to  tables.
+slow down the writes.Because Every time we add ,update or delete records.MySql has to update the correspond indexes
+
+For these reasons we have to reserve indexes for performance critical queries.
+Design indexes based on your queries ,not your tables. 
+creating index at design level is like solving problem that does not exist.
+Internally the queries store like a binary tree.
+
+
+//Creating Indexes .
+
+EXPLAIN SELECT  customer_id
+FROM customers
+WHERE state='CA';
+
+CREATE INDEX idx_state ON customers(state);
+
+//Exercise 
+write a query to find customers with  more than 1000 points
+
+EXPLAIN SELECT customer_id 
+FROM customers
+WHERE points>1000;
+
+CREATE INDEX idx_points ON customers(points);
+
+//Viewing Indexes
+
+SHOW INDEXES IN customers;
+ANALYZE TABLE customers;
+
+STRING COLUMNS:
+CREATE INDEX idx_lastname ON customers(last_name(20));
+
+SELECT
+ COUNT(DISTINCT LEFT(last_name),1) 
+ COUNT(DISTINCT LEFT(last_name),5) 
+ COUNT(DISTINCT LEFT(last_name),10) 
+ COUNT(DISTINCT LEFT(last_name),20) 
+FROM customers;
+
+Full text Indexes:
+//we use this indexes to bulid fast and flexible search engines in our applications.
+'react redux'
+
+USE sql_blog;
+SELECT  *
+FROM posts
+WHERE title LIKE '%react redux%' OR
+	body LIKE '%react redux%';
+
+
+CREATE FULLTEXT INDEX idx_title_body ON posts(title,body);
+
+//Natural Language mode
+SELECT * ,MATCH(title,body) AGAINST('react redux')
+FROM posts
+WHERE MATCH(title,body) AGAINST('react redux');
+
+//It will show based on relevance mode.it is basically float value between 0 to 1.
+//Boolean mode
+SELECT * ,MATCH(title,body) AGAINST('react redux')
+FROM posts
+WHERE MATCH(title,body) AGAINST('react -redux+form'  IN BOOLEAN MODE);
+
+USE sql_store;
+SHOW INDEXES IN customers;
+EXPLAIN SELECT customer_id FROM customers
+WHERE state='CA'  AND points>1000;
+
+//composite indexes :
+	We can index  multiple columns with composite index;
+CREATE INDEX  idx_state_points  ON customers(state,points);
+EXPLAIN SELECT customer_id FROM customers
+WHERE state='CA'  AND points>1000;
+
+composite index optimized the query.In reality we should use composite index beacause we have  multiple filters.Indexes  sort the data faster.
+Single column indexes are gonna waste lots of space.so, better to use 
+composite indexes.In MySql we can include maximum 16 columns in composite index.Better to do with 4 or 5 columns.
+
+DROP INDEX idx_state ON customers;
+DROP INDEX idx_points ON customers;
+
+
+//order of columns in composite indexes:
+2 rules:
+put the most frequently used columns first.
+put the columns with a higher cardinality first.
+	cardinality represents no of unique values in a column.so basic rule of sum better to put the columns with high cardinality.It is not a better practise.Take the query into account.
+
+ex: 
+ EXPLAIN SELECT customer_id 
+FROM	customers
+WHERE 	state='CA'	AND last_name LIKE 'A%' ;
+
+SELECT 
+	COUNT(DISTINCT state),
+	COUNT(DISTINCT lastname)
+FROM customers;
+
+CREATE INDEX idx_lastname_state ON customers(last_name,state);
+CREATE INDEX idx_state_last_name  ON customers(state,last_name);
+
+
+ EXPLAIN SELECT customer_id 
+FROM	customers
+USE INDEX (idx_lastname_state)
+WHERE 	state='CA'	AND last_name LIKE 'A%' ;
+
+Based on the rules if we select last name take into account because of  cardinality  but when we take into state it results the better performance.So we always look on query.
+
+EXPLAIN SELECT customer_id 
+FROM	customers
+USE INDEX (idx_lastname_state)
+WHERE 	state='A%'	AND last_name LIKE 'A%' ;
+
+
+EXPLAIN SELECT customer_id 
+FROM	customers
+USE INDEX (idx_state_lastname)
+WHERE 	state='CA'	AND last_name LIKE 'A%' ;
+
+DROP INDEX idx_lastname_state ON customers;
+
+//When Indexes are ignored.
+
+EXPLAIN SELECT customer_id FROM customers
+WHERE state='CA' OR  points>1000;
+
+It is one of the situation where we have to rewrite query to utilize indexes in best possible way.
+
+CREATE INDEX idx_points ON customers(points);
+EXPLAIN SELECT customer_id FROM customers
+WHERE state='CA'
+UNION
+SELECT customer_id FROM customers
+WHERE points>1000;
+
+EXPLAIN SELECT 	customer_id   FROM   customers
+WHERE 	points+10 > 2010
+///whenever we write expression in column mysql cannot  utilize index in the best possible way.
+
+Isolating the column rewriting the above expression as  follows
+EXPLAIN SELECT 	customer_id   FROM   customers
+WHERE 	points> 2000;
+
+//so if want  mysql to utilize indexes always isolate the columns
+
+
+
+//Using indexes for sorting :
+SHOW INDEXES IN customers;
+EXPLAIN SELECT customer_id 
+FROM customers
+
+ORDER BY first_name;
+
+show status LIKE 'last_query_cost';
+
+EXPLAIN SELECT customer_id 
+FROM customers
+
+ORDER BY state;
+
+show status LIKE 'last_query_cost';
+
+EXPLAIN SELECT customer_id 
+FROM customers
+
+ORDER BY state,points  DESC;
+
+show status LIKE 'last_query_cost';
+
+EXPLAIN SELECT customer_id 
+FROM customers
+
+ORDER BY state DESC,points  DESC;
+
+show status LIKE 'last_query_cost';
+
+If we have index on two colums a,b.we can sort by
+-- a
+-- a,b
+--a DESC ,b DESC
+-- b
+
+covering Indexes:
+EXPLAIN SELECT customer_id FROM customers 
+ORDER BY state;
+
+SHOW STATUS LIKE 'last_query_cost'; 
+
+
+EXPLAIN SELECT * FROM customers 
+ORDER BY state;
+
+SHOW STATUS LIKE 'last_query_cost'; 
+//Here we get full table scan the query is expensive.
+
+whenever we create a secondary index mysql always include primary key in them.
+If our query has the column in index then it does not scan table.
+
+1)observe the  columns in where clause which are repeated in where clause include the column in index table.
+Then observe the columns in order by clause  include them in index there by narrowing the search.
+If we include the columns in select clause
+Then we will get covering index.Mysql use that index for your queries.
+
+
+//Index Maintenance:
+Index will dramatically improve the performance.But too much good thing can be a bad thing.
+Duplicate indexes.
+ same set of columns in same order.Always check the existing indexes before creating indexes .Make sure to Drop redundant,Duplicate unused indexes.
+creating new idexes.
+(a,b,c) 
+(a,b,c)
+Redundant indexes.
+(a,b)
+(a) =>redundant
+(b,a) not redundant
+b  not redundant
+
+
