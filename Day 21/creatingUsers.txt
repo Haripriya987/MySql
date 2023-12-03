@@ -1,0 +1,16 @@
+//creating new user  and giving previleges
+
+CREATE USER  abc@127.0.0.1(ip adress of a system to only connect with)
+CREATE USER abc@localhost (hostname )
+CREATE USER abc@'%.subdomainname' (to connect with domain use domain ) 
+
+//No restrictions can connect from anywhere 
+CREATE USER  abc  IDENTIFIED BY 'password'
+
+
+//viewing Users
+SELECT * FROM  database.table;
+Also we can view from Administration tab and in that select user and previleges
+
+//Dropping users:
+DROP USER  abc@domain;
